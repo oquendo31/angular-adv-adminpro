@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 
 import {RegisterForm}  from '../interfaces/register-form.interface'
 import {LoginForm}  from '../interfaces/login-form.interface'
+import { Usuario }  from '../models/usuario.model'
 
 declare const google: any;
 
@@ -22,17 +23,24 @@ declare const gapi: any;
 export class UsuarioService {
 
   public auth2: any;
-
-
-
+  public usuario: Usuario;
 
 
       constructor( private http: HttpClient, 
         private router: Router,
         private ngZone: NgZone ) {
        
+        }  
+        
+        
+
+        get token(): string {
+          return localStorage.getItem('token') || '';
         }
-      
+
+        get uid():string {
+          return this.usuario.uid || '';
+        }
                
 
   logout() {    
@@ -51,24 +59,30 @@ export class UsuarioService {
 
   validarToken(): Observable<boolean> { //Luego utilizamos este servicio en el authGuard
     //Estraigo el token del local store 
-    const token = localStorage.getItem('token') || '';
+    // const token = localStorage.getItem('token') || '';
 
     //hacemos una peticion al backEnd
    return  this.http.get(`${base_url}/login/renew`,{
       headers: {
-        'x-token': token
+        'x-token': this.token
       }
     }).pipe(
-      tap( (resp: any) => {
-        localStorage.setItem('token',resp.token)       
+      map( (resp: any) => {
+  console.log(resp)
+        const { nombre, email, img = '',google,role,uid   } = resp.usuario; 
+        this.usuario = new Usuario (nombre, email, '', google, role, img, uid );
+        // this.usuario.imprimirUsuario();
+        localStorage.setItem('token',resp.token)  
+        return true;     
       }),
-      map( resp => true),
+      // map( resp => true),
+
       catchError ( error => of(false))
     );
   }
 
 
-
+//Crear Usuario
   crearUsuario ( formData: RegisterForm ) {
     return this.http.post(`${base_url}/usuarios`,formData)
     .pipe (
@@ -76,9 +90,27 @@ export class UsuarioService {
         localStorage.setItem('token',resp.token)
         })
     )   
-    
       
   }  
+
+
+  //Actualizar Perfil
+actualizarPerfil( data: { email:string, nombre:string, role: string } ) {
+
+  data = {
+    ...data,
+    role: this.usuario.role
+  };
+
+  return this.http.put(`${base_url}/usuarios/${ this.uid }`,data, {
+    headers: {
+      'x-token': this.token
+    }
+  })
+
+
+}
+
 
   
   login ( formData: LoginForm ) {
@@ -102,8 +134,7 @@ export class UsuarioService {
                     localStorage.setItem('email', resp.email )
                   })
                 );
-
-  }
+      }
 
 
 }
