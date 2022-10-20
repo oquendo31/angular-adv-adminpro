@@ -11,7 +11,7 @@
                       (submit)="actualizarPerfil()">
 
                     <div class="form-group" >
-                        <label for="exampleInputuname">User Name</label>
+                        <label for="exampleInputuname">User Name*</label>
                         <div class="input-group">
                             <div class="input-group-addon"><i class="ti-user"></i></div>
 
@@ -22,9 +22,10 @@
                                    formControlName = "nombre" >
                         </div>
                     </div>
+                   
 
                     <div class="form-group">
-                        <label for="exampleInputEmail1">Email address</label>
+                        <label for="exampleInputEmail1">Email address*</label>
                         <div class="input-group">
                             <div class="input-group-addon"><i class="ti-email"></i></div>
 
@@ -32,7 +33,8 @@
                                    class="form-control"
                                    id="exampleInputEmail1" 
                                    placeholder="email"
-                                   formControlName = "email">
+                                   formControlName = "email"
+                                   [readOnly] ="usuario.google">
                         </div>
                     </div>              
                
@@ -45,20 +47,41 @@
                    
                 </form>
             </div>
+            
+       
+            <div  class="row">
+                <div class="col text-danger">
+    
+                    <p *ngIf="campoNoValido('nombre')">* El nombre es obligatorio </p>
+                    <p *ngIf="campoNoValido('email')">* El email es obligatorio y tiene que ser válido</p>
+                    
+    
+                </div>
+    
+            </div>
+
         </div>
+       
     </div>
 
     <div class="col-md-6">
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title">Avatar</h4>
-                <h6 class="card-subtitle">Imagen del usuario</h6>
-                <img src="" >
-                <input type="file">
+                <h6 class="card-subtitle">Imagen del usuario*</h6>
+                
+               <div class="text-center">
+                <img *ngIf="!imgTemp" [src]="usuario.imagenUrl"  class="img-avatar">  
+                <img *ngIf="imgTemp" [src]="imgTemp"  class="img-avatar"> 
+               </div>
+                
+                <input type="file"
+                      (change)="cambiarImagen($event.target.files[0])">
                 <br>
                 <br>
-
-                <button type="button" class="btn btn-success btn-block waves-effect waves-light m-r-10">
+                <button type="button" class="btn btn-success btn-block waves-effect waves-light m-r-10"
+                         [disabled]="!imagenSubir"
+                         (click)="subirimagen()">
                     <i class="fa fa-save"></i>
                     Cambiar imagen
                 </button>

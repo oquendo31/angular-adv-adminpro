@@ -22,3 +22,12 @@
     justify-content: center;
     text-align: center;
 }
+
+.img-avatar {
+    height: 190px;
+    width: 210px;   
+    border-radius: 10%;
+    border: 12px solid transparent;
+}
+
+
