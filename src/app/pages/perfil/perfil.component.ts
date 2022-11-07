@@ -10,7 +10,7 @@ import Swal from 'sweetalert2';
   templateUrl: './perfil.component.html',
   styleUrls: []
 })
-export class PerfilComponent implements OnInit {
+export class PerfilComponent implements OnInit {  
 
   public perfilForm: FormGroup;
   public usuario: Usuario;
